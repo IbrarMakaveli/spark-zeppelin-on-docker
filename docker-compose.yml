@@ -20,7 +20,7 @@ services:
         - /var/run/docker.sock:/var/run/docker.sock:ro
 
   master:
-    build: .
+    build: docker/.
     command: bin/spark-class org.apache.spark.deploy.master.Master -h master
     hostname: master
     environment:
@@ -46,7 +46,7 @@ services:
       - ./logs:/tmp/logs
 
   worker:
-    build: .
+    build: docker/.
     command: bin/spark-class org.apache.spark.deploy.worker.Worker spark://master:7077
     hostname: worker
     environment:
@@ -59,7 +59,7 @@ services:
       - ./data:/tmp/data
 
   history:
-    build: .
+    build: docker/.
     command: bin/spark-class org.apache.spark.deploy.history.HistoryServer
     hostname: history
     environment:
@@ -76,7 +76,7 @@ services:
       - ./logs:/tmp/logs
 
   zeppelin:
-    build: .
+    build: docker/.
     command: /usr/zeppelin/bin/zeppelin.sh
     hostname: zeppelin
     environment:
