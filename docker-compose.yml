@@ -101,5 +101,4 @@ services:
       - 8090
     volumes:
       - ./notebook:/usr/zeppelin/notebook
-      - ./logs:/tmp/logs
       - ./data:/tmp/data

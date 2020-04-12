@@ -43,29 +43,32 @@ ENV JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
 
 # HADOOP
 ENV HADOOP_VERSION 3.0.0
-ENV HADOOP_HOME /usr/hadoop-$HADOOP_VERSION
-ENV HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
-ENV PATH $PATH:$HADOOP_HOME/bin
+RUN mkdir -p /usr/hadoop
+ENV HADOOP_HOME /usr/hadoop
+ENV HADOOP_CONF_DIR=${HADOOP_HOME}/etc/hadoop
+ENV PATH ${PATH}:${HADOOP_HOME}/bin
 RUN curl -L --retry 3 \
-  "http://archive.apache.org/dist/hadoop/common/hadoop-$HADOOP_VERSION/hadoop-$HADOOP_VERSION.tar.gz" \
+  "http://archive.apache.org/dist/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz" \
   | gunzip \
   | tar -x -C /usr/ \
- && rm -rf $HADOOP_HOME/share/doc \
- && chown -R root:root $HADOOP_HOME
+ && mv /usr/hadoop-${HADOOP_VERSION}/* ${HADOOP_HOME} \
+ && chown -R root:root ${HADOOP_HOME} \
+ && rm -rf ${HADOOP_HOME}/share/doc /usr/hadoop-${HADOOP_VERSION}
 
 
 # SPARK
 ENV SPARK_VERSION 2.4.5
-ENV SPARK_PACKAGE spark-${SPARK_VERSION}-bin-without-hadoop
-ENV SPARK_HOME /usr/spark-${SPARK_VERSION}
-ENV SPARK_DIST_CLASSPATH="$HADOOP_HOME/etc/hadoop/*:$HADOOP_HOME/share/hadoop/common/lib/*:$HADOOP_HOME/share/hadoop/common/*:$HADOOP_HOME/share/hadoop/hdfs/*:$HADOOP_HOME/share/hadoop/hdfs/lib/*:$HADOOP_HOME/share/hadoop/hdfs/*:$HADOOP_HOME/share/hadoop/yarn/lib/*:$HADOOP_HOME/share/hadoop/yarn/*:$HADOOP_HOME/share/hadoop/mapreduce/lib/*:$HADOOP_HOME/share/hadoop/mapreduce/*:$HADOOP_HOME/share/hadoop/tools/lib/*"
-ENV PATH $PATH:${SPARK_HOME}/bin
+RUN mkdir -p /usr/spark 
+ENV SPARK_HOME /usr/spark
+ENV SPARK_DIST_CLASSPATH="${HADOOP_HOME}/etc/hadoop/*:${HADOOP_HOME}/share/hadoop/common/lib/*:${HADOOP_HOME}/share/hadoop/common/*:${HADOOP_HOME}/share/hadoop/hdfs/*:${HADOOP_HOME}/share/hadoop/hdfs/lib/*:${HADOOP_HOME}/share/hadoop/hdfs/*:${HADOOP_HOME}/share/hadoop/yarn/lib/*:${HADOOP_HOME}/share/hadoop/yarn/*:${HADOOP_HOME}/share/hadoop/mapreduce/lib/*:${HADOOP_HOME}/share/hadoop/mapreduce/*:${HADOOP_HOME}/share/hadoop/tools/lib/*"
+ENV PATH ${PATH}:${SPARK_HOME}/bin
 RUN curl -L --retry 3 \
-  "https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/${SPARK_PACKAGE}.tgz" \
+  "https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-without-hadoop.tgz" \
   | gunzip \
   | tar x -C /usr/ \
- && mv /usr/$SPARK_PACKAGE $SPARK_HOME \
- && chown -R root:root $SPARK_HOME
+ && mv /usr/spark-${SPARK_VERSION}-bin-without-hadoop/* ${SPARK_HOME} \
+ && chown -R root:root ${SPARK_HOME} \
+ && rm -rf /usr/spark-${SPARK_VERSION}-bin-without-hadoop
 ENV MASTER spark://master:7077
 
 
@@ -76,17 +79,17 @@ ADD https://repo1.maven.org/maven2/org/apache/spark/spark-hive_${HIVE_VERSION}/$
 
 # ZEPPELIN
 ENV ZEPPELIN_VERSION 0.8.2
-RUN mkdir /usr/zeppelin 
+RUN mkdir -p /usr/zeppelin 
 ENV ZEPPELIN_HOME /usr/zeppelin
 RUN curl -L --retry 3 \
   "http://apache.crihan.fr/dist/zeppelin/zeppelin-${ZEPPELIN_VERSION}/zeppelin-${ZEPPELIN_VERSION}-bin-netinst.tgz" \
   | gunzip \
   | tar x -C /usr/ \
- && mv /usr/zeppelin-${ZEPPELIN_VERSION}-bin-netinst/* $ZEPPELIN_HOME \
- && chown -R root:root $ZEPPELIN_HOME
+ && mv /usr/zeppelin-${ZEPPELIN_VERSION}-bin-netinst/* ${ZEPPELIN_HOME} \
+ && chown -R root:root ${ZEPPELIN_HOME} \
+ && rm -rf /usr/zeppelin-${ZEPPELIN_VERSION}-bin-netinst
  
-RUN mkdir -p ${ZEPPELIN_HOME} \
-  && mkdir -p ${ZEPPELIN_HOME}/logs \
-  && mkdir -p ${ZEPPELIN_HOME}/run
+RUN mkdir -p ${ZEPPELIN_HOME}/logs \
+ && mkdir -p ${ZEPPELIN_HOME}/run
 
-WORKDIR $SPARK_HOME
+WORKDIR ${SPARK_HOME}
