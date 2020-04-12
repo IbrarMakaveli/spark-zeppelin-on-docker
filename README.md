@@ -1,3 +1,12 @@
+![java](https://img.shields.io/badge/java-1.8.0-red?style=flat-square)
+![scala](https://img.shields.io/badge/scala-2.11.12-e20001?style=flat-square)
+![python](https://img.shields.io/badge/python-3.5.3-blue?style=flat-square)
+
+![hadoop](https://img.shields.io/badge/hadoop-3.0.0-yellow?style=flat-square)
+![spark](https://img.shields.io/badge/spark-2.4.5-e25a1c?style=flat-square)
+![traefik](https://img.shields.io/badge/traefik-2.2-38abc8?style=flat-square)
+![zeppelin](https://img.shields.io/badge/zeppelin-0.8.2-3372a7?style=flat-square)
+
 # Spark Standalone Zeppelin on Docker
 
 Here is a docker installation of Spark Standalone with the following feature tools: 
