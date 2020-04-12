@@ -8,7 +8,11 @@ services:
         - "--api.insecure=true"
         - "--providers.docker=true"
         - "--providers.docker.exposedbydefault=false"
-        - "--entrypoints.web.address=:80"
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.api.rule=Host(`traefik.localhost`)"
+        - "traefik.http.routers.api.service=api@internal"
+        - "traefik.http.routers.api.entrypoints=http"
       ports:
         - "80:80"
         - "8080:8080"
@@ -22,14 +26,12 @@ services:
     environment:
       SPARK_CONF_DIR: /tmp/conf
       SPARK_MASTER_WEBUI_PORT: 8082
-      SPARK_PUBLIC_DNS: localhost
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.master.rule=Host(`master.spark.localhost`)"
-      - "traefik.http.routers.master.entrypoints=web"
+      - "traefik.http.routers.master.rule=Host(`master.localhost`)"
+      - "traefik.http.routers.master.entrypoints=http"
       - "traefik.http.services.master.loadbalancer.server.port=8082"
     expose:
-      - 8082
       - 7077
       - 4040
     depends_on:
@@ -37,7 +39,6 @@ services:
     ports:
       - "7077:7077"
       - "4040:4040"
-      - "8082:8082"
     volumes:
       - ./conf/master:/tmp/conf
       - ./src:/tmp/src
@@ -52,15 +53,6 @@ services:
       SPARK_CONF_DIR: /tmp/conf
       SPARK_WORKER_CORES: 2
       SPARK_WORKER_MEMORY: 1g
-      SPARK_PUBLIC_DNS: localhost
-    links:
-      - master
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.worker.rule=Host(`worker.spark.localhost`)"
-      - "traefik.http.routers.worker.entrypoints=web"
-    expose:
-      - 8081
     volumes:
       - ./conf/worker:/tmp/conf
       - ./logs:/tmp/logs
@@ -72,18 +64,13 @@ services:
     hostname: history
     environment:
       SPARK_CONF_DIR: /tmp/conf
-      SPARK_PUBLIC_DNS: localhost
     links:
       - master
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.history.rule=Host(`history.spark.localhost`)"
-      - "traefik.http.routers.history.entrypoints=web"
+      - "traefik.http.routers.history.rule=Host(`history.localhost`)"
+      - "traefik.http.routers.history.entrypoints=http"
       - "traefik.http.services.history.loadbalancer.server.port=18080"
-    expose:
-      - 18080
-    ports:
-      - "18080:18080"
     volumes:
       - ./conf/master:/tmp/conf
       - ./logs:/tmp/logs
@@ -102,13 +89,9 @@ services:
       - master
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.zeppelin.rule=Host(`zeppelin.spark.localhost`)"
-      - "traefik.http.routers.zeppelin.entrypoints=web"
+      - "traefik.http.routers.zeppelin.rule=Host(`zeppelin.localhost`)"
+      - "traefik.http.routers.zeppelin.entrypoints=http"
       - "traefik.http.services.zeppelin.loadbalancer.server.port=8090"
-    expose:
-      - 8090
-    ports:
-      - "8090:8090"
     volumes:
       - ./notebook:/usr/zeppelin/notebook
       - ./logs:/tmp/logs
