@@ -1,7 +1,7 @@
 version: "3.7"
 services:
 
-  reverse-proxy:
+  traefik-proxy:
       image: "traefik:v2.2"
       container_name: "traefik"
       command:
@@ -33,7 +33,7 @@ services:
       - 7077
       - 4040
     depends_on:
-      - reverse-proxy
+      - traefik-proxy
     ports:
       - "7077:7077"
       - "4040:4040"

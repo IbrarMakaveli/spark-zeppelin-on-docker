@@ -11,7 +11,6 @@ RUN apt-get update \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
-# Users with other locales should set this in their derivative image
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
@@ -24,18 +23,9 @@ RUN apt-get update \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
-# http://blog.stuart.axelbrooke.com/python-3-on-spark-return-of-the-pythonhashseed
 ENV PYTHONHASHSEED 0
 ENV PYTHONIOENCODING UTF-8
 ENV PIP_DISABLE_PIP_VERSION_CHECK 1
-
-# to download numpy these 5 packages + their dependencies must be installed:
-
-# Python3 - 70 mb
-# Python3-dev - 25 mb
-# gfortran - 20 mb
-# gcc - 70 mb
-# musl-dev -10 mb (used for tracking unexpected behaviour/debugging)
 
 ADD requirements-pip.txt .
 RUN pip3 install --upgrade pip setuptools && \
@@ -77,6 +67,7 @@ RUN curl -L --retry 3 \
  && mv /usr/$SPARK_PACKAGE $SPARK_HOME \
  && chown -R root:root $SPARK_HOME
 ENV MASTER spark://master:7077
+
 
 # HIVEE JAR
 ENV HIVE_VERSION 2.11
