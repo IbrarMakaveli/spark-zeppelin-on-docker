@@ -29,6 +29,7 @@ Name              | URL
 Spark Master      | http://master.localhost/
 History Job Spark | http://history.localhost/
 Zeppelin Notebook | http://zeppelin.localhost/
+Traefik           | http://traefik.localhost/
 
 ### Volumes mounted
 
