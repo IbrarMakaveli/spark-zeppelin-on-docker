@@ -9,6 +9,6 @@ if not exist data mkdir data
 if not exist logs mkdir logs
 
 set NUM_WORKER=%1
-if %NUM_WORKER%x == x set NUM_WORKER=1
+if %NUM_WORKER%x == x set NUM_WORKER=2
 
 docker-compose up --scale worker=%NUM_WORKER%

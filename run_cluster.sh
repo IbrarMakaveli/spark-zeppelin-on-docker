@@ -8,6 +8,6 @@ mkdir -p src
 mkdir -p data
 mkdir -p logs
 
-[[ -z "$1" ]] && NUM_WORKER=1 || NUM_WORKER="$1"
+[[ -z "$1" ]] && NUM_WORKER=2 || NUM_WORKER="$1"
 
 docker-compose up --scale worker=${NUM_WORKER}

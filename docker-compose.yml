@@ -3,7 +3,7 @@ services:
 
   traefik-proxy:
       image: "traefik:v2.2"
-      container_name: "traefik"
+      container_name: traefik_proxy
       command:
         - "--api.insecure=true"
         - "--providers.docker=true"
@@ -22,7 +22,7 @@ services:
   master:
     build: docker/.
     command: bin/spark-class org.apache.spark.deploy.master.Master -h master
-    hostname: master
+    container_name: master_spark
     environment:
       SPARK_CONF_DIR: /tmp/conf
       SPARK_MASTER_WEBUI_PORT: 8082
@@ -48,11 +48,14 @@ services:
   worker:
     build: docker/.
     command: bin/spark-class org.apache.spark.deploy.worker.Worker spark://master:7077
-    hostname: worker
     environment:
       SPARK_CONF_DIR: /tmp/conf
       SPARK_WORKER_CORES: 2
       SPARK_WORKER_MEMORY: 1g
+    links:
+      - master
+    expose:
+      - 8081
     volumes:
       - ./conf/worker:/tmp/conf
       - ./logs:/tmp/logs
@@ -61,7 +64,7 @@ services:
   history:
     build: docker/.
     command: bin/spark-class org.apache.spark.deploy.history.HistoryServer
-    hostname: history
+    container_name: history_spark
     environment:
       SPARK_CONF_DIR: /tmp/conf
     links:
@@ -71,6 +74,8 @@ services:
       - "traefik.http.routers.history.rule=Host(`history.localhost`)"
       - "traefik.http.routers.history.entrypoints=http"
       - "traefik.http.services.history.loadbalancer.server.port=18080"
+    expose:
+      - 18080
     volumes:
       - ./conf/master:/tmp/conf
       - ./logs:/tmp/logs
@@ -78,7 +83,7 @@ services:
   zeppelin:
     build: docker/.
     command: /usr/zeppelin/bin/zeppelin.sh
-    hostname: zeppelin
+    container_name: zeppelin_spark
     environment:
       ZEPPELIN_NOTEBOOK_DIR: /usr/zeppelin/notebook
       ZEPPELIN_PORT: 8090
@@ -92,6 +97,8 @@ services:
       - "traefik.http.routers.zeppelin.rule=Host(`zeppelin.localhost`)"
       - "traefik.http.routers.zeppelin.entrypoints=http"
       - "traefik.http.services.zeppelin.loadbalancer.server.port=8090"
+    expose:
+      - 8090
     volumes:
       - ./notebook:/usr/zeppelin/notebook
       - ./logs:/tmp/logs
