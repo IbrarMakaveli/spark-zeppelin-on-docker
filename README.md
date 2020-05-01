@@ -23,7 +23,7 @@ Launch cluster on `Windows` :
 run_cluster.cmd <NUM_WORKER>
 ```
 
-Launch cluster on `Linux` :
+Launch cluster on `Unix` :
 ```bash
 ./run_cluster.sh <NUM_WORKER>
 ```
